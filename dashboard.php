@@ -3,10 +3,28 @@ session_start();
 require 'helpers.php';
 require 'database.php';
 
-// if (isset($_SESSION['user'])) {
-//     header('Location: logout.php');
-//     exit;
-// }
+
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+$host = $_SERVER['HTTP_HOST'];
+// $requestUri = $_SERVER['REQUEST_URI'];
+
+$currentUrl = $protocol . $host .'/'. 'feedback';
+
+// echo $currentUrl;
+
+if (isset($_SESSION['user'])) {
+    $email = $_SESSION['user'];
+    $user = $userAgent->getUserByEmail($email);
+    $userName = $user['name'];
+    $userIdentity = $user['identifier'];
+
+    $feedbackUrl = $currentUrl .'/'. $userIdentity;
+}
+
+if (!isset($_SESSION['user'])) {
+        header('Location: login.php');
+        exit;
+    }
 
 ?>
 
@@ -22,7 +40,7 @@ require 'database.php';
 <header class="bg-white">
     <nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
         <div class="flex lg:flex-1">
-            <a href="./index.html" class="-m-1.5 p-1.5">
+            <a href="./index.php" class="-m-1.5 p-1.5">
                 <span class="sr-only">TruthWhisper</span>
                 <span class="block font-bold text-lg bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 inline-block text-transparent bg-clip-text">TruthWhisper</span>
             </a>
@@ -36,7 +54,7 @@ require 'database.php';
             </button>
         </div>
         <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-            <span class="text-sm font-semibold leading-6 text-gray-900">John Doe</span>
+            <span class="text-sm font-semibold leading-6 text-gray-900"><?= $userName; ?></span>
         </div>
         <div class="mt-3 space-y-1 px-2">
             <a href="logout.php" class="block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-emerald-500 hover:bg-opacity-75">Sign
@@ -49,7 +67,7 @@ require 'database.php';
         <div class="fixed inset-0 z-10"></div>
         <div class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
             <div class="flex items-center justify-between">
-                <a href="./index.html" class="-m-1.5 p-1.5">
+                <a href="./index.php" class="-m-1.5 p-1.5">
                     <span class="sr-only">TruthWhisper</span>
                     <span class="block font-bold text-xl bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 inline-block text-transparent bg-clip-text">TruthWhisper</span>
                 </a>
@@ -63,7 +81,7 @@ require 'database.php';
             <div class="mt-6 flow-root">
                 <div class="-my-6 divide-y divide-gray-500/10">
                     <div class="py-6">
-                        <span class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">John Doe</span>
+                        <span class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"><?= $userName; ?></span>
                     </div>
                 </div>
             </div>
@@ -78,7 +96,7 @@ require 'database.php';
 
         <div class="relative max-w-7xl mx-auto">
             <div class="flex justify-end">
-                <span class="block text-gray-600 font-mono border border-gray-400 rounded-xl px-2 py-1">Your feedback form link: <strong>http://localhost/feedback/sYu24jl</strong></span>
+                <span class="block text-gray-600 font-mono border border-gray-400 rounded-xl px-2 py-1">Your feedback form link: <strong><?= $feedbackUrl; ?></strong></span>
             </div>
             <h1 class="text-xl text-indigo-800 text-bold my-10">Received feedback</h1>
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">

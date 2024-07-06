@@ -96,7 +96,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </button>
         </div>
         <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-            <a href="./login.html" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
+            <?php if (!isset($_SESSION['user']) && empty($_SESSION['user'])) : ?>
+                <a href="./login.php" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
+            <?php else : ?>
+                <a href="./logout.php" class="text-sm font-semibold leading-6 text-gray-900">Log out <span aria-hidden="true">&rarr;</span></a>
+            <?php endif; ?>
         </div>
     </nav>
     <!-- Mobile menu, show/hide based on menu open state. -->

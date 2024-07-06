@@ -3,6 +3,7 @@ session_start();
 require 'helpers.php';
 require 'database.php';
 
+// Redirect to dashboard if user is already logged in
 if (isset($_SESSION['user'])) {
     header('Location: dashboard.php');
     exit;

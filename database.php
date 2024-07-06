@@ -29,7 +29,7 @@ class TextFile implements UserInterface
                     fclose($file);
                     
                     return [
-                        'identitier' => $userInfo[0],
+                        'identifier' => $userInfo[0],
                         'name' => $userInfo[1],
                         'email' => $userInfo[2],
                         'password' => $userInfo[3],
@@ -42,9 +42,9 @@ class TextFile implements UserInterface
         return null;
     }
 
-    public function saveUser($identitier, $name, $email, $password):bool
+    public function saveUser($identifier, $name, $email, $password):bool
     {
-        $line = $identitier . ", " . $name . ", " . $email . ", " . $password . "\n";
+        $line = $identifier . ", " . $name . ", " . $email . ", " . $password . "\n";
 
         $file = fopen($this->filePath, "a");
         if ($file === false) {
@@ -70,8 +70,8 @@ class UserAgent
        return $this->userData->getUser($email);
     }
 
-    public function saveUserInfo($identitier, $name, $email, $password){
-        if($this->userData->saveUser($identitier, $name, $email, $password)===true){
+    public function saveUserInfo($identifier, $name, $email, $password){
+        if($this->userData->saveUser($identifier, $name, $email, $password)===true){
             return true;
         }
         return false;
