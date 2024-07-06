@@ -1,3 +1,75 @@
+<?php
+ob_start();
+session_start();
+require 'helpers.php';
+require 'database.php';
+
+
+
+// Redirect to dashboard if user is already logged in
+if (isset($_SESSION['user'])) {
+    header('Location: dashboard.php');
+    exit;
+}
+
+// Steps to follow:
+// 1. Connect to the database
+// 2. Check if the form is submitted
+// 3. Handle any errors that occur
+// 4. Sanitize the input data
+// 5. Prepare and Execute the SQL statement to Fetch the User
+// 6. Verify the password
+// 7. Redirect the user to the dashboard page on successful login
+// 8. Store the user data in the session before redirecting
+
+// Initialize error bag and input data
+$errors = [];
+$email = '';
+$password = '';
+
+
+// Check if the form is submitted
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Handle Any Errors That Occur
+
+    // Sanitize and Validate the Email Field
+    if (empty($_POST['email'])) {
+        $errors['email'] = 'Please provide an email address';
+    } else {
+        $email = sanitize($_POST['email']);
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors['email'] = 'Please provide a valid email address';
+        }
+    }
+
+    // Sanitize and Validate the Password Field
+    if (empty($_POST['password'])) {
+        $errors['password'] = 'Please provide a password';
+    } else {
+        $password = sanitize($_POST['password']);
+    }
+
+    if (empty($errors)) {
+        
+        // Execute The SQL Statement
+        $user = $userAgent->getUserByEmail($email);
+        // dd($user);
+        if ($user) {
+            if ($user && password_verify($password, $user['password'])) {
+                $_SESSION['user'] = $user['email'];
+                // dd($user);
+                header('Location: dashboard.php');
+                exit;
+            } else {
+                $errors['auth_error'] = 'Invalid email or password';
+            }
+        } else {
+            $errors['auth_error'] = 'An error occurred. Please try again';
+        }
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,7 +82,7 @@
 <header class="bg-white">
     <nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
         <div class="flex lg:flex-1">
-            <a href="./index.html" class="-m-1.5 p-1.5">
+            <a href="./index.php" class="-m-1.5 p-1.5">
                 <span class="sr-only">TruthWhisper</span>
                 <span class="block font-bold text-lg bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 inline-block text-transparent bg-clip-text">TruthWhisper</span>
             </a>
@@ -47,7 +119,7 @@
             <div class="mt-6 flow-root">
                 <div class="-my-6 divide-y divide-gray-500/10">
                     <div class="py-6">
-                        <a href="./login.html" class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Log in</a>
+                        <a href="./login.php" class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Log in</a>
                     </div>
                 </div>
             </div>
@@ -67,12 +139,36 @@
                     </div>
 
                     <div class="mt-10 mx-auto w-full max-w-xl">
-                        <form class="space-y-6" action="#" method="POST">
+                        <?php
+                        $message = flash('success');
+                        if ($message) : ?>
+                            <div class="mt-2 bg-teal-100 border border-teal-200 text-sm text-teal-800 rounded-lg p-4" role="alert">
+                                <span class="font-bold"><?= $message; ?></span>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php
+                        $message = flash('error');
+                        if ($message) : ?>
+                            <div class="mt-2 bg-red-100 border border-red-200 text-sm text-red-800 rounded-lg p-4" role="alert">
+                                <span class="font-bold"><?= $message; ?></span>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if (isset($errors['auth_error'])) : ?>
+                            <div class="mt-2 bg-red-100 border border-red-200 text-sm text-red-800 rounded-lg p-4" role="alert">
+                                <span class="font-bold"><?= $errors['auth_error']; ?></span>
+                            </div>
+                        <?php endif; ?>
+                        <form class="space-y-6" action="#" method="POST" novalidate>
                             <div>
                                 <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email address</label>
                                 <div class="mt-2">
-                                    <input id="email" name="email" type="email" autocomplete="email" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <input id="email" name="email" type="email" autocomplete="email" required class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 </div>
+                                <?php if (isset($errors['email'])) : ?>
+                                    <p class="text-xs text-red-600 mt-2" id="email-error"><?= $errors['email']; ?></p>
+                                <?php endif; ?>
                             </div>
 
                             <div>
@@ -83,8 +179,11 @@
                                     </div>
                                 </div>
                                 <div class="mt-2">
-                                    <input id="password" name="password" type="password" autocomplete="current-password" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <input id="password" name="password" type="password" autocomplete="current-password" required class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 </div>
+                                <?php if (isset($errors['password'])) : ?>
+                                    <p class="text-xs text-red-600 mt-2" id="password-error"><?= $errors['password']; ?></p>
+                                <?php endif; ?>
                             </div>
 
                             <div>
@@ -94,7 +193,7 @@
 
                         <p class="mt-10 text-center text-sm text-gray-500">
                             Not a member?
-                            <a href="./register.html" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">Register now!</a>
+                            <a href="./register.php" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">Register now!</a>
                         </p>
                     </div>
                 </div>

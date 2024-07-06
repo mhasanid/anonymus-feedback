@@ -1,3 +1,15 @@
+<?php
+session_start();
+require 'helpers.php';
+require 'database.php';
+
+// if (isset($_SESSION['user'])) {
+//     header('Location: logout.php');
+//     exit;
+// }
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,6 +37,10 @@
         </div>
         <div class="hidden lg:flex lg:flex-1 lg:justify-end">
             <span class="text-sm font-semibold leading-6 text-gray-900">John Doe</span>
+        </div>
+        <div class="mt-3 space-y-1 px-2">
+            <a href="logout.php" class="block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-emerald-500 hover:bg-opacity-75">Sign
+                out</a>
         </div>
     </nav>
     <!-- Mobile menu, show/hide based on menu open state. -->

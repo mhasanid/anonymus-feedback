@@ -1,3 +1,109 @@
+<?php
+session_start();
+require 'helpers.php';
+require 'database.php';
+
+if (isset($_SESSION['user'])) {
+    header('Location: dashboard.php');
+    exit;
+}
+
+
+// Error Container
+$errors = [];
+
+// Input Data
+$rand_string=generateRandomString();
+$name = '';
+$email = '';
+$password = '';
+
+
+// Check if the form is submitted
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    // Sanitize and Validate the Name Field
+    if (empty($_POST['name'])) {
+        $errors['name'] = 'Please provide a name';
+    } else {
+        $name = sanitize($_POST['name']);
+    }
+
+    // Sanitize and Validate the Email Field
+    if (empty($_POST['email'])) {
+        $errors['email'] = 'Please provide an email address';
+    } else {
+        $email = sanitize($_POST['email']);
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors['email'] = 'Please provide a valid email address';
+        }
+    }
+
+    // Sanitize and Validate the Password Field
+    if (!empty($_POST['password']) && !empty($_POST['confirm_password'])) {
+        if (strlen($_POST['password']) < 8) {
+            $errors['password'] = 'Password must be at least 8 characters';
+        } elseif ($_POST['password']===$_POST['confirm_password']){
+            $password = sanitize($_POST['password']);
+            // Hash The Password
+            $password = password_hash($password, PASSWORD_DEFAULT);
+        } else{
+            $errors['confirm-password'] = 'Please type the same password again.';
+        }
+
+    } elseif (empty($_POST['password'])) {
+        $errors['password'] = 'Please provide a password';
+    } elseif(empty($_POST['confirm_password'])){
+        $errors['confirm-password'] = 'Please re-type the password.';
+    }
+
+    // // Sanitize and Validate the Password Field
+    // if (empty($_POST['password'])) {
+    //     $errors['password'] = 'Please provide a password';
+    // } elseif (strlen($_POST['password']) < 8) {
+    //     $errors['password'] = 'Password must be at least 8 characters';
+    // } else {
+    //     $password = sanitize($_POST['password']);
+
+    //     // Hash The Password
+    //     $password = password_hash($password, PASSWORD_DEFAULT);
+    // }
+
+    // // Validating the Confirm Password Field
+    // if(empty($_POST['confirm_password'])){
+    //     $errors['confirm-password'] = 'Please provide a password.';
+    // } elseif($_POST['password']!==$_POST['confirm_password']){
+    //     $errors['confirm-password'] = 'Please type the same password again.';
+    // } else{
+    //     $password = password_hash($password, PASSWORD_DEFAULT);
+    // }
+
+
+    if (empty($errors)) {
+        
+        if ($userAgent->getUserByEmail($email)) {
+            flash('error', 'You are already registered. Please login.');
+            // $errors['auth_error'] = 'You are already registered. Please login.';
+            // echo  $errors['auth_error'];
+            header('Location: login.php');
+            exit;
+        }
+
+        if ($userAgent->saveUserInfo($rand_string, $name, $email, $password)) {
+            flash('success', 'You have successfully registered. Please log in to continue');
+
+            header('Location: login.php');
+            exit;
+        } else {
+            $errors['auth_error'] = 'An error occurred. Please try again';
+        }
+    }
+}
+
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,6 +115,11 @@
 <body class="bg-gray-100">
 <header class="bg-white">
     <nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
+        <?php if (isset($errors['auth_error'])) : ?>
+            <div class="mt-2 bg-red-100 border border-red-200 text-sm text-red-800 rounded-lg p-4" role="alert">
+                <span class="font-bold"><?= $errors['auth_error']; ?></span>
+            </div>
+        <?php endif; ?>
         <div class="flex lg:flex-1">
             <a href="./index.html" class="-m-1.5 p-1.5">
                 <span class="sr-only">TruthWhisper</span>
@@ -24,7 +135,7 @@
             </button>
         </div>
         <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-            <a href="./login.html" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
+            <a href="./login.php" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
         </div>
     </nav>
     <!-- Mobile menu, show/hide based on menu open state. -->
@@ -67,19 +178,25 @@
                     </div>
 
                     <div class="mt-10 mx-auto w-full max-w-xl">
-                        <form class="space-y-6" action="#" method="POST">
+                        <form class="space-y-6" action="#" method="POST" novalidate>
                             <div>
                                 <label for="name" class="block text-sm font-medium leading-6 text-gray-900">Name</label>
                                 <div class="mt-2">
-                                    <input id="name" name="name" type="text" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <input id="name" name="name" type="text" required class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 </div>
+                                <?php if (isset($errors['name'])) : ?>
+                                    <p class="text-xs text-red-600 mt-2" id="name-error"><?= $errors['name']; ?></p>
+                                <?php endif; ?>
                             </div>
 
                             <div>
                                 <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email address</label>
                                 <div class="mt-2">
-                                    <input id="email" name="email" type="email" autocomplete="email" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <input id="email" name="email" type="email" autocomplete="email" required class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 </div>
+                                <?php if (isset($errors['email'])) : ?>
+                                    <p class="text-xs text-red-600 mt-2" id="email-error"><?= $errors['email']; ?></p>
+                                <?php endif; ?>
                             </div>
 
                             <div>
@@ -87,8 +204,11 @@
                                     <label for="password" class="block text-sm font-medium leading-6 text-gray-900">Password</label>
                                 </div>
                                 <div class="mt-2">
-                                    <input id="password" name="password" type="password" autocomplete="current-password" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <input id="password" name="password" type="password" autocomplete="current-password" required class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 </div>
+                                <?php if (isset($errors['password'])) : ?>
+                                    <p class="text-xs text-red-600 mt-2" id="password-error"><?= $errors['password']; ?></p>
+                                <?php endif; ?>
                             </div>
 
                             <div>
@@ -96,8 +216,11 @@
                                     <label for="confirm_password" class="block text-sm font-medium leading-6 text-gray-900">Confirm Password</label>
                                 </div>
                                 <div class="mt-2">
-                                    <input id="confirm_password" name="confirm_password" type="password" required class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                    <input id="confirm_password" name="confirm_password" type="password" required class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 </div>
+                                <?php if (isset($errors['confirm-password'])) : ?>
+                                    <p class="text-xs text-red-600 mt-2" id="confirm-password-error"><?= $errors['confirm-password']; ?></p>
+                                <?php endif; ?>
                             </div>
 
                             <div>
@@ -107,7 +230,7 @@
 
                         <p class="mt-10 text-center text-sm text-gray-500">
                             Already have an account?
-                            <a href="./login.html" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">Login!</a>
+                            <a href="./login.php" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">Login!</a>
                         </p>
                     </div>
                 </div>

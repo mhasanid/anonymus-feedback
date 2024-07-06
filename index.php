@@ -47,10 +47,10 @@
             <div class="mt-6 flow-root">
                 <div class="-my-6 divide-y divide-gray-500/10">
                     <div class="py-6">
-                        <?php if (!isset($_SESSION['user_id']) && empty($_SESSION['user_id'])) : ?>
+                        <?php if (!isset($_SESSION['user']) && empty($_SESSION['user'])) : ?>
                             <a href="./login.php" class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Log in</a>
                         <?php else : ?>
-                            <a href="./logout.php" class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Log in</a>
+                            <a href="./logout.php" class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Log Out</a>
                         <?php endif; ?>           
                     </div>
                 </div>
