@@ -5,7 +5,7 @@ require 'database.php';
 
 // Redirect to dashboard if user is already logged in
 if (isset($_SESSION['user'])) {
-    header('Location: dashboard.php');
+    header('Location: /dashboard');
     exit;
 }
 
@@ -86,14 +86,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             flash('error', 'You are already registered. Please login.');
             // $errors['auth_error'] = 'You are already registered. Please login.';
             // echo  $errors['auth_error'];
-            header('Location: login.php');
+            header('Location: /login');
             exit;
         }
 
         if ($userAgent->saveUserInfo($rand_string, $name, $email, $password)) {
             flash('success', 'You have successfully registered. Please log in to continue');
 
-            header('Location: login.php');
+            header('Location: /login');
             exit;
         } else {
             $errors['auth_error'] = 'An error occurred. Please try again';
@@ -136,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </button>
         </div>
         <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-            <a href="./login.php" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
+            <a href="/login" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
         </div>
     </nav>
     <!-- Mobile menu, show/hide based on menu open state. -->
@@ -231,7 +231,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         <p class="mt-10 text-center text-sm text-gray-500">
                             Already have an account?
-                            <a href="./login.php" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">Login!</a>
+                            <a href="/login" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">Login!</a>
                         </p>
                     </div>
                 </div>

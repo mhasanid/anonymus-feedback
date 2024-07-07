@@ -8,7 +8,7 @@ require 'database.php';
 
 // Redirect to dashboard if user is already logged in
 if (isset($_SESSION['user'])) {
-    header('Location: dashboard.php');
+    header('Location: /dashboard');
     exit;
 }
 
@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($user && password_verify($password, $user['password'])) {
                 $_SESSION['user'] = $user['email'];
                 // dd($user);
-                header('Location: dashboard.php');
+                header('Location: /dashboard');
                 exit;
             } else {
                 $errors['auth_error'] = 'Invalid email or password';
@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <header class="bg-white">
     <nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
         <div class="flex lg:flex-1">
-            <a href="./index.php" class="-m-1.5 p-1.5">
+            <a href="/" class="-m-1.5 p-1.5">
                 <span class="sr-only">TruthWhisper</span>
                 <span class="block font-bold text-lg bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 inline-block text-transparent bg-clip-text">TruthWhisper</span>
             </a>
@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="hidden lg:flex lg:flex-1 lg:justify-end">
             <?php if (!isset($_SESSION['user']) && empty($_SESSION['user'])) : ?>
-                <a href="./login.php" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
+                <a href="/login" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
             <?php else : ?>
                 <a href="./logout.php" class="text-sm font-semibold leading-6 text-gray-900">Log out <span aria-hidden="true">&rarr;</span></a>
             <?php endif; ?>
@@ -123,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="mt-6 flow-root">
                 <div class="-my-6 divide-y divide-gray-500/10">
                     <div class="py-6">
-                        <a href="./login.php" class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Log in</a>
+                        <a href="/login" class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Log in</a>
                     </div>
                 </div>
             </div>
@@ -197,7 +197,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         <p class="mt-10 text-center text-sm text-gray-500">
                             Not a member?
-                            <a href="./register.php" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">Register now!</a>
+                            <a href="/register" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">Register now!</a>
                         </p>
                     </div>
                 </div>
