@@ -10,11 +10,8 @@ if (!isset($_SESSION['user'])) {
 
 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
 $host = $_SERVER['HTTP_HOST'];
-// $requestUri = $_SERVER['REQUEST_URI'];
-
 $currentUrl = $protocol . $host .'/'. 'feedback';
 
-// echo $currentUrl;
 
 if (isset($_SESSION['user'])) {
     $email = $_SESSION['user'];
@@ -23,7 +20,10 @@ if (isset($_SESSION['user'])) {
     $userIdentity = $user['identifier'];
 
     $feedbackUrl = $currentUrl .'/'. $userIdentity;
+    
+    $userFeedbacks = $feedbackManager->getAllFeedbackById($userIdentity);
 }
+
 
 
 
@@ -101,7 +101,28 @@ if (isset($_SESSION['user'])) {
             </div>
             <h1 class="text-xl text-indigo-800 text-bold my-10">Received feedback</h1>
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                <div class="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400">
+                <?php if (empty($userFeedbacks)) : ?>
+                    <div class="mx-auto max-w-xl">
+                        <h1 class="block text-center font-bold text-2xl bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 inline-block text-transparent bg-clip-text">
+                            You've got no feedback yet. Share you link to get feedback from others.
+                        </h1>
+                    </div>
+                <?php else : ?>
+                    
+                    <?php
+                        foreach ($userFeedbacks as $feedback) {
+                    ?>
+                            <div class="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400">
+                                <div class="focus:outline-none">
+                                    <p class="text-gray-500"><?=$feedback;?></p>
+                                </div>
+                            </div>
+                    <?php
+                        }
+                    ?>
+                <?php endif; ?>
+                
+                <!-- <div class="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400">
                     <div class="focus:outline-none">
                         <p class="text-gray-500">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
                     </div>
@@ -123,7 +144,7 @@ if (isset($_SESSION['user'])) {
                     <div class="focus:outline-none">
                         <p class="text-gray-500">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
 

@@ -1,6 +1,7 @@
 <?php
 
-const FILE_PATH = "users.txt";
+const FILE_PATH_USER = "users.txt";
+const FILE_PATH_FEEDBACK = "feedback.txt";
 
 interface UserInterface
 {
@@ -9,8 +10,14 @@ interface UserInterface
     public function saveUser($identitier, $name, $email, $password);
 }
 
+interface FeedBackInterface
+{
+    public function getAllFeedback($identifier):array;
+    public function saveFeedback($identifier, $feedback):bool;
+}
 
-class TextFile implements UserInterface
+
+class TextFileUser implements UserInterface
 {
     private $filePath;
 
@@ -84,6 +91,69 @@ class TextFile implements UserInterface
     }
 }
 
+class TextfileFeedback implements FeedBackInterface
+{
+    private $filePath;
+
+    public function __construct(String $filePath)
+    {
+        $this->filePath = $filePath;
+    }
+
+    public function getAllFeedback($identifier): array
+    {
+        if (file_exists($this->filePath)) {
+            $serializedArray = file_get_contents($this->filePath);
+            $array = unserialize($serializedArray)?unserialize($serializedArray):[];;
+            if(empty($array) || !array_key_exists($identifier, $array)){
+                return [];
+            }
+            return $array[$identifier];
+        } else {
+            return [];
+        }
+    }
+
+    public function saveFeedback($identifier, $feedback):bool
+    {
+        if (file_exists($this->filePath)) {
+            $serializedArray = file_get_contents($this->filePath);
+            $array = unserialize($serializedArray)?unserialize($serializedArray):[];
+        } else {
+            $array = [];
+        }
+
+        if (array_key_exists($identifier, $array)) {
+            $array[$identifier][] = $feedback;
+        } else {
+            $array[$identifier] = [$feedback];
+        }
+
+        $serializedArray = serialize($array);
+
+        if(file_put_contents($this->filePath, $serializedArray)){
+            return true;
+        }
+        return false;
+        
+    }
+}
+
+class FeedbackManager
+{
+    private $textfileFeedback;
+    public function __construct(FeedBackInterface $textfileFeedback)
+    {
+        $this->textfileFeedback=$textfileFeedback;
+    }
+    public function getAllFeedbackById($identifier){
+        return $this->textfileFeedback->getAllFeedback($identifier);
+    }
+    public function saveFeedback($identifier, $feedback){
+        return $this->textfileFeedback->saveFeedback($identifier, $feedback);
+    }
+}
+
 class UserAgent
 {
     private $userData;
@@ -108,4 +178,5 @@ class UserAgent
 }
 
 
-$userAgent = new UserAgent(new TextFile(FILE_PATH));
+$userAgent = new UserAgent(new TextFileUser(FILE_PATH_USER));
+$feedbackManager = new FeedbackManager(new TextfileFeedback(FILE_PATH_FEEDBACK));

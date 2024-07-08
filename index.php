@@ -55,7 +55,7 @@ if (array_key_exists($uri, $routes)) {
 }else {
     // Handle 404 Not Found
     http_response_code(404);
-    // include '404.php';
+    include '404.php';
 }
 
 ?>

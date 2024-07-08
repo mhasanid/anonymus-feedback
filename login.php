@@ -12,17 +12,6 @@ if (isset($_SESSION['user'])) {
     exit;
 }
 
-// Steps to follow:
-// 1. Connect to the database
-// 2. Check if the form is submitted
-// 3. Handle any errors that occur
-// 4. Sanitize the input data
-// 5. Prepare and Execute the SQL statement to Fetch the User
-// 6. Verify the password
-// 7. Redirect the user to the dashboard page on successful login
-// 8. Store the user data in the session before redirecting
-
-// Initialize error bag and input data
 $errors = [];
 $email = '';
 $password = '';
@@ -30,7 +19,6 @@ $password = '';
 
 // Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Handle Any Errors That Occur
 
     // Sanitize and Validate the Email Field
     if (empty($_POST['email'])) {
@@ -164,7 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <span class="font-bold"><?= $errors['auth_error']; ?></span>
                             </div>
                         <?php endif; ?>
-                        <form class="space-y-6" action="#" method="POST" novalidate>
+                        <form class="space-y-6" action="#" method="POST">
                             <div>
                                 <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email address</label>
                                 <div class="mt-2">
