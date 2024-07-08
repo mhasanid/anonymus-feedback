@@ -1,6 +1,5 @@
 <?php
 session_start();
-// require 'helpers.php';
 require 'database.php';
 
 if (!isset($_SESSION['user'])) {
@@ -8,6 +7,7 @@ if (!isset($_SESSION['user'])) {
     exit;
 }
 
+// Generating dynamic link based on user identity and retriving reviews. 
 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
 $host = $_SERVER['HTTP_HOST'];
 $currentUrl = $protocol . $host .'/'. 'feedback';
@@ -21,7 +21,7 @@ if (isset($_SESSION['user'])) {
 
     $feedbackUrl = $currentUrl .'/'. $userIdentity;
     
-    $userFeedbacks = $feedbackManager->getAllFeedbackById($userIdentity);
+    $userFeedbacks = $feedbackManager->getAllFeedbackById($userIdentity); // array
 }
 
 
@@ -62,9 +62,7 @@ if (isset($_SESSION['user'])) {
                 out</a>
         </div>
     </nav>
-    <!-- Mobile menu, show/hide based on menu open state. -->
     <div class="lg:hidden" role="dialog" aria-modal="true">
-        <!-- Background backdrop, show/hide based on slide-over state. -->
         <div class="fixed inset-0 z-10"></div>
         <div class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
             <div class="flex items-center justify-between">
@@ -122,29 +120,6 @@ if (isset($_SESSION['user'])) {
                     ?>
                 <?php endif; ?>
                 
-                <!-- <div class="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400">
-                    <div class="focus:outline-none">
-                        <p class="text-gray-500">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
-                    </div>
-                </div>
-
-                <div class="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400">
-                    <div class="focus:outline-none">
-                        <p class="text-gray-500">But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.</p>
-                    </div>
-                </div>
-
-                <div class="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400">
-                    <div class="focus:outline-none">
-                        <p class="text-gray-500">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. </p>
-                    </div>
-                </div>
-
-                <div class="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400">
-                    <div class="focus:outline-none">
-                        <p class="text-gray-500">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                    </div>
-                </div> -->
             </div>
         </div>
 

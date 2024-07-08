@@ -37,15 +37,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $password = sanitize($_POST['password']);
     }
 
+    // login operation.
     if (empty($errors)) {
-        
-        // Execute The SQL Statement
         $user = $userAgent->getUserByEmail($email);
-        // dd($user);
         if ($user) {
             if ($user && password_verify($password, $user['password'])) {
                 $_SESSION['user'] = $user['email'];
-                // dd($user);
                 header('Location: /dashboard');
                 exit;
             } else {
@@ -91,9 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
         </div>
     </nav>
-    <!-- Mobile menu, show/hide based on menu open state. -->
     <div class="lg:hidden" role="dialog" aria-modal="true">
-        <!-- Background backdrop, show/hide based on slide-over state. -->
         <div class="fixed inset-0 z-10"></div>
         <div class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
             <div class="flex items-center justify-between">

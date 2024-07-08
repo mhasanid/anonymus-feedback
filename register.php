@@ -46,7 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors['password'] = 'Password must be at least 8 characters';
         } elseif ($_POST['password']===$_POST['confirm_password']){
             $password = sanitize($_POST['password']);
-            // Hash The Password
             $password = password_hash($password, PASSWORD_DEFAULT);
         } else{
             $errors['confirm-password'] = 'Please type the same password again.';
@@ -58,34 +57,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors['confirm-password'] = 'Please re-type the password.';
     }
 
-    // // Sanitize and Validate the Password Field
-    // if (empty($_POST['password'])) {
-    //     $errors['password'] = 'Please provide a password';
-    // } elseif (strlen($_POST['password']) < 8) {
-    //     $errors['password'] = 'Password must be at least 8 characters';
-    // } else {
-    //     $password = sanitize($_POST['password']);
-
-    //     // Hash The Password
-    //     $password = password_hash($password, PASSWORD_DEFAULT);
-    // }
-
-    // // Validating the Confirm Password Field
-    // if(empty($_POST['confirm_password'])){
-    //     $errors['confirm-password'] = 'Please provide a password.';
-    // } elseif($_POST['password']!==$_POST['confirm_password']){
-    //     $errors['confirm-password'] = 'Please type the same password again.';
-    // } else{
-    //     $password = password_hash($password, PASSWORD_DEFAULT);
-    // }
-
 
     if (empty($errors)) {
         
         if ($userAgent->getUserByEmail($email)) {
             flash('error', 'You are already registered. Please login.');
-            // $errors['auth_error'] = 'You are already registered. Please login.';
-            // echo  $errors['auth_error'];
             header('Location: /login');
             exit;
         }
@@ -139,9 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="/login" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
         </div>
     </nav>
-    <!-- Mobile menu, show/hide based on menu open state. -->
     <div class="lg:hidden" role="dialog" aria-modal="true">
-        <!-- Background backdrop, show/hide based on slide-over state. -->
         <div class="fixed inset-0 z-10"></div>
         <div class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
             <div class="flex items-center justify-between">

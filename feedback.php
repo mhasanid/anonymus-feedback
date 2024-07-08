@@ -6,14 +6,12 @@ require 'database.php';
 $errors = [];
 $feedback = '';
 
+// save the feedback to the server if the id and corresponding user is valid
 if($id){
     $user = $userAgent->getUserById($id);
     if($user){
-        // $previousFeedNumber = count($feedbackManager->getAllFeedbackById($id));
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Handle Any Errors That Occur
         
-            // Sanitize and Validate the Email Field
             if (empty($_POST['feedback'])) {
                 $errors['feedback'] = 'Please write something to ' . $user['name'];
             } else {
@@ -22,12 +20,6 @@ if($id){
                     header("Location: ../feedback-success.php");
                     exit;
                 }
-                // $presentFeedNumber =count($feedbackManager->getAllFeedbackById($id));
-                // if($presentFeedNumber-$presentFeedNumber==0){
-                //     echo "success";
-                //     header("Location: feedback-success.php");
-                //     exit;
-                // }
             }
         }
     }
